@@ -9,17 +9,17 @@ import time
 import httpx
 
 
-def get_openrouter_models():
+def get_litellm_models():
     models = fetch_cached_json(
-        url="https://openrouter.ai/api/v1/models",
-        path=llm.user_dir() / "openrouter_models.json",
+        url="https://litellm.ai/api/v1/models",
+        path=llm.user_dir() / "litellm_models.json",
         cache_timeout=3600,
     )["data"]
     schema_supporting_ids = {
         model["id"]
         for model in fetch_cached_json(
-            url="https://openrouter.ai/api/v1/models?supported_parameters=structured_outputs",
-            path=llm.user_dir() / "openrouter_models_structured_outputs.json",
+            url="https://litellm.ai/api/v1/models?supported_parameters=structured_outputs",
+            path=llm.user_dir() / "litellm_models_structured_outputs.json",
             cache_timeout=3600,
         )["data"]
     }
@@ -66,41 +66,41 @@ class _mixin:
         return kwargs
 
 
-class OpenRouterChat(_mixin, Chat):
-    needs_key = "openrouter"
-    key_env_var = "OPENROUTER_KEY"
+class litellmChat(_mixin, Chat):
+    needs_key = "litellm"
+    key_env_var = "litellm_KEY"
 
     def __str__(self):
-        return "OpenRouter: {}".format(self.model_id)
+        return "litellm: {}".format(self.model_id)
 
 
-class OpenRouterAsyncChat(_mixin, AsyncChat):
-    needs_key = "openrouter"
-    key_env_var = "OPENROUTER_KEY"
+class litellmAsyncChat(_mixin, AsyncChat):
+    needs_key = "litellm"
+    key_env_var = "litellm_KEY"
 
     def __str__(self):
-        return "OpenRouter: {}".format(self.model_id)
+        return "litellm: {}".format(self.model_id)
 
 
 @llm.hookimpl
 def register_models(register):
-    # Only do this if the openrouter key is set
-    key = llm.get_key("", "openrouter", "OPENROUTER_KEY")
+    # Only do this if the litellm key is set
+    key = llm.get_key("", "litellm", "litellm_KEY")
     if not key:
         return
-    for model_definition in get_openrouter_models():
+    for model_definition in get_litellm_models():
         supports_images = get_supports_images(model_definition)
         kwargs = dict(
-            model_id="openrouter/{}".format(model_definition["id"]),
+            model_id="litellm/{}".format(model_definition["id"]),
             model_name=model_definition["id"],
             vision=supports_images,
             supports_schema=model_definition["supports_schema"],
-            api_base="https://openrouter.ai/api/v1",
+            api_base="https://litellm.ai/api/v1",
             headers={"HTTP-Referer": "https://llm.datasette.io/", "X-Title": "LLM"},
         )
         register(
-            OpenRouterChat(**kwargs),
-            OpenRouterAsyncChat(**kwargs),
+            litellmChat(**kwargs),
+            litellmAsyncChat(**kwargs),
         )
 
 
@@ -159,22 +159,22 @@ def get_supports_images(model_definition):
 @llm.hookimpl
 def register_commands(cli):
     @cli.group()
-    def openrouter():
-        "Commands relating to the llm-openrouter plugin"
+    def litellm():
+        "Commands relating to the llm-litellm plugin"
 
-    @openrouter.command()
+    @litellm.command()
     @click.option("--free", is_flag=True, help="List free models")
     @click.option("json_", "--json", is_flag=True, help="Output as JSON")
     def models(free, json_):
-        "List of OpenRouter models"
+        "List of litellm models"
         if free:
             all_models = [
                 model
-                for model in get_openrouter_models()
+                for model in get_litellm_models()
                 if model["id"].endswith(":free")
             ]
         else:
-            all_models = get_openrouter_models()
+            all_models = get_litellm_models()
         if json_:
             click.echo(json.dumps(all_models, indent=2))
         else:
@@ -200,13 +200,13 @@ def register_commands(cli):
                     bits.append("  pricing: " + pricing)
                 click.echo("\n".join(bits) + "\n")
 
-    @openrouter.command()
+    @litellm.command()
     @click.option("--key", help="Key to inspect")
     def key(key):
         "View information and rate limits for the current key"
-        key = llm.get_key(key, "openrouter", "OPENROUTER_KEY")
+        key = llm.get_key(key, "litellm", "litellm_KEY")
         response = httpx.get(
-            "https://openrouter.ai/api/v1/auth/key",
+            "https://litellm.ai/api/v1/auth/key",
             headers={"Authorization": f"Bearer {key}"},
         )
         response.raise_for_status()

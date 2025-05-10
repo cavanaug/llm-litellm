@@ -1,13 +1,13 @@
 # THIS IS A WIP FOR CREATING A LITELLM PLUGIN.   NOTHING IS WORKING YET.   ALL DOCS ARE WRONG
 
-# llm-openrouter
+# llm-litellm
 
-[![PyPI](https://img.shields.io/pypi/v/llm-openrouter.svg)](https://pypi.org/project/llm-openrouter/)
-[![Changelog](https://img.shields.io/github/v/release/simonw/llm-openrouter?include_prereleases&label=changelog)](https://github.com/simonw/llm-openrouter/releases)
-[![Tests](https://github.com/simonw/llm-openrouter/workflows/Test/badge.svg)](https://github.com/simonw/llm-openrouter/actions?query=workflow%3ATest)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/simonw/llm-openrouter/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/llm-litellm.svg)](https://pypi.org/project/llm-litellm/)
+[![Changelog](https://img.shields.io/github/v/release/simonw/llm-litellm?include_prereleases&label=changelog)](https://github.com/simonw/llm-litellm/releases)
+[![Tests](https://github.com/simonw/llm-litellm/workflows/Test/badge.svg)](https://github.com/simonw/llm-litellm/actions?query=workflow%3ATest)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/simonw/llm-litellm/blob/main/LICENSE)
 
-[LLM](https://llm.datasette.io/) plugin for models hosted by [OpenRouter](https://openrouter.ai/)
+[LLM](https://llm.datasette.io/) plugin for models hosted by [LiteLLM](https://litellm.ai/)
 
 ## Installation
 
@@ -16,17 +16,17 @@ First, [install the LLM command-line utility](https://llm.datasette.io/en/stable
 Now install this plugin in the same environment as LLM.
 
 ```bash
-llm install llm-openrouter
+llm install llm-litellm
 ```
 
 ## Configuration
 
-You will need an API key from OpenRouter. You can [obtain one here](https://openrouter.ai/keys).
+You will need an API key from LiteLLM. You can [obtain one here](https://litellm.ai/keys).
 
-You can set that as an environment variable called `OPENROUTER_KEY`, or add it to the `llm` set of saved keys using:
+You can set that as an environment variable called `LITELLM_KEY`, or add it to the `llm` set of saved keys using:
 
 ```bash
-llm keys set openrouter
+llm keys set litellm
 ```
 
 ```
@@ -44,43 +44,43 @@ llm models list
 You should see a list that looks something like this:
 
 ```
-OpenRouter: openrouter/openai/gpt-3.5-turbo
-OpenRouter: openrouter/anthropic/claude-2
-OpenRouter: openrouter/meta-llama/llama-2-70b-chat
+LiteLLM: litellm/openai/gpt-3.5-turbo
+LiteLLM: litellm/anthropic/claude-2
+LiteLLM: litellm/meta-llama/llama-2-70b-chat
 ...
 ```
 
 To run a prompt against a model, pass its full model ID to the `-m` option, like this:
 
 ```bash
-llm -m openrouter/anthropic/claude-2 "Five spooky names for a pet tarantula"
+llm -m litellm/anthropic/claude-2 "Five spooky names for a pet tarantula"
 ```
 
 You can set a shorter alias for a model using the `llm aliases` command like so:
 
 ```bash
-llm aliases set claude openrouter/anthropic/claude-2
+llm aliases set claude litellm/anthropic/claude-2
 ```
 
 Now you can prompt Claude using:
 
 ```bash
-cat llm_openrouter.py | llm -m claude -s 'write some pytest tests for this'
+cat llm_litellm.py | llm -m claude -s 'write some pytest tests for this'
 ```
 
 Images are supported too, for some models:
 
 ```bash
-llm -m openrouter/anthropic/claude-3.5-sonnet 'describe this image' -a https://static.simonwillison.net/static/2024/pelicans.jpg
-llm -m openrouter/anthropic/claude-3-haiku 'extract text' -a page.png
+llm -m litellm/anthropic/claude-3.5-sonnet 'describe this image' -a https://static.simonwillison.net/static/2024/pelicans.jpg
+llm -m litellm/anthropic/claude-3-haiku 'extract text' -a page.png
 ```
 
 ### Vision models
 
-Some OpenRouter models can accept image attachments. Run this command:
+Some LiteLLM models can accept image attachments. Run this command:
 
 ```bash
-llm models --options -q openrouter
+llm models --options -q litellm
 ```
 
 And look for models that list these attachment types:
@@ -93,7 +93,7 @@ And look for models that list these attachment types:
 You can feed these models images as URLs or file paths, for example:
 
 ```bash
-llm -m openrouter/google/gemini-flash-1.5 'describe image' \
+llm -m litellm/google/gemini-flash-1.5 'describe image' \
   -a https://static.simonwillison.net/static/2025/two-pelicans.jpg
 ```
 
@@ -101,12 +101,12 @@ llm -m openrouter/google/gemini-flash-1.5 'describe image' \
 
 LLM includes support for [schemas](https://llm.datasette.io/en/stable/schemas.html), allowing you to control the JSON structure of the output returned by the model.
 
-Some of the models provided by OpenRouter are compatible with this feature, see [their full list of structured output models](https://openrouter.ai/models?order=newest&supported_parameters=structured_outputs) for details.
+Some of the models provided by LiteLLM are compatible with this feature, see [their full list of structured output models](https://litellm.ai/models?order=newest&supported_parameters=structured_outputs) for details.
 
-`llm-openrouter` currently enables schema support for the models in that list. Models have varying levels of quality in their schema support, so test carefully rather than assuming all models will correctly work the same.
+`llm-litellm` currently enables schema support for the models in that list. Models have varying levels of quality in their schema support, so test carefully rather than assuming all models will correctly work the same.
 
 ```bash
-llm -m openrouter/google/gemini-flash-1.5 'invent 3 cool capybaras' \
+llm -m litellm/google/gemini-flash-1.5 'invent 3 cool capybaras' \
   --schema-multi 'name,bio'
 ```
 
@@ -133,35 +133,35 @@ Output:
 
 ### Provider routing
 
-OpenRouter offers [comprehensive options](https://openrouter.ai/docs/features/provider-routing) for controlling which underlying provider your request is routed to.
+LiteLLM offers [comprehensive options](https://litellm.ai/docs/features/provider-routing) for controlling which underlying provider your request is routed to.
 
-You can specify these using the OpenRouter JSON format, then pass that to LLM using the `-o provider '{JSON goes here}` option:
+You can specify these using the LiteLLM JSON format, then pass that to LLM using the `-o provider '{JSON goes here}` option:
 
 ```bash
-llm -m openrouter/meta-llama/llama-3.1-8b-instruct hi \
+llm -m litellm/meta-llama/llama-3.1-8b-instruct hi \
   -o provider '{"quantizations": ["fp8"]}'
 ```
 
-This specifies that you would like only providers that [support fp8 quantization](https://openrouter.ai/docs/features/provider-routing#example-requesting-fp8-quantization) for that model.
+This specifies that you would like only providers that [support fp8 quantization](https://litellm.ai/docs/features/provider-routing#example-requesting-fp8-quantization) for that model.
 
 ### Incorporating search results from Exa
 
-OpenRouter have [a partnership](https://openrouter.ai/docs/features/web-search) with [Exa](https://exa.ai/) where prompts through _any_ supported model can be augmented with relevant search results from the Exa index - a form of RAG.
+LiteLLM have [a partnership](https://litellm.ai/docs/features/web-search) with [Exa](https://exa.ai/) where prompts through _any_ supported model can be augmented with relevant search results from the Exa index - a form of RAG.
 
 Enable this feature using the `-o online 1` option:
 
 ```bash
-llm -m openrouter/mistralai/mistral-small -o online 1 'key events on march 1st 2025'
+llm -m litellm/mistralai/mistral-small -o online 1 'key events on march 1st 2025'
 ```
 
-Consult the OpenRouter documentation for [current pricing](https://openrouter.ai/docs/features/web-search#pricing).
+Consult the LiteLLM documentation for [current pricing](https://litellm.ai/docs/features/web-search#pricing).
 
 ### Listing models
 
-The `llm models -q openrouter` command will display all available models, or you can use this command to see more detailed JSON:
+The `llm models -q litellm` command will display all available models, or you can use this command to see more detailed JSON:
 
 ```bash
-llm openrouter models
+llm litellm models
 ```
 
 Output starts like this:
@@ -220,18 +220,18 @@ Add `--json` to get back JSON instead, which looks like this:
   }
 ```
 
-Add `--free` for a list of just the models that are [available for free](https://openrouter.ai/models?max_price=0).
+Add `--free` for a list of just the models that are [available for free](https://litellm.ai/models?max_price=0).
 
 ```bash
-llm openrouter models --free
+llm litellm models --free
 ```
 
 ### Information about your API key
 
-The `llm openrouter key` command shows you information about your current API key, including rate limits:
+The `llm litellm key` command shows you information about your current API key, including rate limits:
 
 ```bash
-llm openrouter key
+llm litellm key
 ```
 
 Example output:
@@ -250,12 +250,12 @@ Example output:
 }
 ```
 
-This will default to inspecting the key you have set using `llm keys set openrouter` or using the `OPENROUTER_KEY` environment variable.
+This will default to inspecting the key you have set using `llm keys set litellm` or using the `LITELLM_KEY` environment variable.
 
 You can inspect a different key by passing the key itself - or the name of the key in the `llm keys` list - as the `--key` option:
 
 ```bash
-llm openrouter key --key sk-xxx
+llm litellm key --key sk-xxx
 ```
 
 ## Development
@@ -263,7 +263,7 @@ llm openrouter key --key sk-xxx
 To set up this plugin locally, first checkout the code. Then create a new virtual environment:
 
 ```bash
-cd llm-openrouter
+cd llm-litellm
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -283,6 +283,6 @@ pytest
 To update recordings and snapshots, run:
 
 ```bash
-PYTEST_OPENROUTER_KEY="$(llm keys get openrouter)" \
+PYTEST_LITELLM_KEY="$(llm keys get litellm)" \
   pytest --record-mode=rewrite --inline-snapshot=fix
 ```
