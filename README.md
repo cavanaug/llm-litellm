@@ -1,3 +1,5 @@
+# THIS IS A WIP FOR CREATING A LITELLM PLUGIN.   NOTHING IS WORKING YET.   ALL DOCS ARE WRONG
+
 # llm-openrouter
 
 [![PyPI](https://img.shields.io/pypi/v/llm-openrouter.svg)](https://pypi.org/project/llm-openrouter/)
@@ -12,6 +14,7 @@
 First, [install the LLM command-line utility](https://llm.datasette.io/en/stable/setup.html).
 
 Now install this plugin in the same environment as LLM.
+
 ```bash
 llm install llm-openrouter
 ```
@@ -25,6 +28,7 @@ You can set that as an environment variable called `OPENROUTER_KEY`, or add it t
 ```bash
 llm keys set openrouter
 ```
+
 ```
 Enter key: <paste key here>
 ```
@@ -32,30 +36,40 @@ Enter key: <paste key here>
 ## Usage
 
 To list available models, run:
+
 ```bash
 llm models list
 ```
+
 You should see a list that looks something like this:
+
 ```
 OpenRouter: openrouter/openai/gpt-3.5-turbo
 OpenRouter: openrouter/anthropic/claude-2
 OpenRouter: openrouter/meta-llama/llama-2-70b-chat
 ...
 ```
+
 To run a prompt against a model, pass its full model ID to the `-m` option, like this:
+
 ```bash
 llm -m openrouter/anthropic/claude-2 "Five spooky names for a pet tarantula"
 ```
+
 You can set a shorter alias for a model using the `llm aliases` command like so:
+
 ```bash
 llm aliases set claude openrouter/anthropic/claude-2
 ```
+
 Now you can prompt Claude using:
+
 ```bash
 cat llm_openrouter.py | llm -m claude -s 'write some pytest tests for this'
 ```
 
 Images are supported too, for some models:
+
 ```bash
 llm -m openrouter/anthropic/claude-3.5-sonnet 'describe this image' -a https://static.simonwillison.net/static/2024/pelicans.jpg
 llm -m openrouter/anthropic/claude-3-haiku 'extract text' -a page.png
@@ -68,12 +82,14 @@ Some OpenRouter models can accept image attachments. Run this command:
 ```bash
 llm models --options -q openrouter
 ```
+
 And look for models that list these attachment types:
 
 ```
   Attachment types:
     application/pdf, image/gif, image/jpeg, image/png, image/webp
 ```
+
 You can feed these models images as URLs or file paths, for example:
 
 ```bash
@@ -93,7 +109,9 @@ Some of the models provided by OpenRouter are compatible with this feature, see 
 llm -m openrouter/google/gemini-flash-1.5 'invent 3 cool capybaras' \
   --schema-multi 'name,bio'
 ```
+
 Output:
+
 ```json
 {
   "items": [
@@ -123,6 +141,7 @@ You can specify these using the OpenRouter JSON format, then pass that to LLM us
 llm -m openrouter/meta-llama/llama-3.1-8b-instruct hi \
   -o provider '{"quantizations": ["fp8"]}'
 ```
+
 This specifies that you would like only providers that [support fp8 quantization](https://openrouter.ai/docs/features/provider-routing#example-requesting-fp8-quantization) for that model.
 
 ### Incorporating search results from Exa
@@ -134,6 +153,7 @@ Enable this feature using the `-o online 1` option:
 ```bash
 llm -m openrouter/mistralai/mistral-small -o online 1 'key events on march 1st 2025'
 ```
+
 Consult the OpenRouter documentation for [current pricing](https://openrouter.ai/docs/features/web-search#pricing).
 
 ### Listing models
@@ -143,7 +163,9 @@ The `llm models -q openrouter` command will display all available models, or you
 ```bash
 llm openrouter models
 ```
+
 Output starts like this:
+
 ```yaml
 - id: latitudegames/wayfarer-large-70b-llama-3.3
   name: LatitueGames: Wayfarer Large 70B Llama 3.3
@@ -163,7 +185,9 @@ Output starts like this:
   architecture: text+image->text Other
   pricing: prompt $0.07/M, completion $0.14/M, image $0.2476/K
 ```
+
 Add `--json` to get back JSON instead, which looks like this:
+
 ```json
 [
   {
@@ -195,7 +219,9 @@ Add `--json` to get back JSON instead, which looks like this:
     "per_request_limits": null
   }
 ```
+
 Add `--free` for a list of just the models that are [available for free](https://openrouter.ai/models?max_price=0).
+
 ```bash
 llm openrouter models --free
 ```
@@ -207,7 +233,9 @@ The `llm openrouter key` command shows you information about your current API ke
 ```bash
 llm openrouter key
 ```
+
 Example output:
+
 ```json
 {
   "label": "sk-or-v1-0fa...240",
@@ -221,6 +249,7 @@ Example output:
   }
 }
 ```
+
 This will default to inspecting the key you have set using `llm keys set openrouter` or using the `OPENROUTER_KEY` environment variable.
 
 You can inspect a different key by passing the key itself - or the name of the key in the `llm keys` list - as the `--key` option:
@@ -232,20 +261,27 @@ llm openrouter key --key sk-xxx
 ## Development
 
 To set up this plugin locally, first checkout the code. Then create a new virtual environment:
+
 ```bash
 cd llm-openrouter
 python3 -m venv venv
 source venv/bin/activate
 ```
+
 Now install the dependencies and test dependencies:
+
 ```bash
 llm install -e '.[test]'
 ```
+
 To run the tests:
+
 ```bash
 pytest
 ```
+
 To update recordings and snapshots, run:
+
 ```bash
 PYTEST_OPENROUTER_KEY="$(llm keys get openrouter)" \
   pytest --record-mode=rewrite --inline-snapshot=fix
